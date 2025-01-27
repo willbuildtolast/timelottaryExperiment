@@ -4,19 +4,23 @@ body {
     color: #333333;
     text-align: center;
     margin: 0;
-    padding: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
-    padding-top: 50px;
+    padding: 30px 20px;
+    flex: 1;
 }
 
 h1 {
     color: #333333;
-    font-size: 36px;
-    margin-bottom: 20px;
+    font-size: clamp(24px, 5vw, 36px);
+    margin-bottom: 15px;
 }
 
 .instructions {
@@ -32,10 +36,18 @@ h1 {
 }
 
 .option-button {
-    width: 300px;
-    height: 150px;
-    margin: 20px;
-    font-size: 18px;
+    width: clamp(280px, 45vw, 400px);
+    height: auto;
+    min-height: 120px;
+    padding: 20px;
+    margin: 15px;
+    font-size: clamp(18px, 3vw, 24px);
+    line-height: 1.5;
+    white-space: pre-line;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     cursor: pointer;
     background-color: #007BFF;
     border: none;
@@ -57,4 +69,267 @@ h1 {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background-color: #e9ecef;
+    border-radius: 6px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+#progress-indicator {
+    height: 100%;
+    background-color: #4CAF50;
+    width: 0%;
+    transition: width 0.4s ease-in-out;
+    border-radius: 6px;
+}
+
+.trial-counter {
+    font-size: clamp(18px, 4vw, 24px);
+    margin: 15px 0;
+    color: #495057;
+    font-weight: bold;
+}
+
+.control-panel {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.control-button {
+    padding: 12px 24px;
+    font-size: clamp(14px, 2.5vw, 16px);
+    min-width: 100px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    background-color: #007BFF;
+    color: white;
+}
+
+.control-button:hover {
+    background-color: #0056b3;
+}
+
+.control-button.exit {
+    background-color: #dc3545;
+}
+
+.control-button.exit:hover {
+    background-color: #c82333;
+}
+
+.paused {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+#options.paused {
+    position: relative;
+}
+
+#options.paused::after {
+    content: "PAUSED";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.instructions-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.instructions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.step-indicator {
+    font-size: 18px;
+    color: #666;
+}
+
+.instruction-steps {
+    margin-bottom: 30px;
+}
+
+.step {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.step h3 {
+    color: #007BFF;
+    font-size: clamp(20px, 4vw, 24px);
+    margin-bottom: 15px;
+}
+
+.step p, .step li {
+    font-size: clamp(16px, 3vw, 18px);
+    line-height: 1.6;
+}
+
+.step ul {
+    padding-left: 20px;
+    margin: 15px 0;
+}
+
+.instruction-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.nav-button {
+    padding: 12px 30px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.nav-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.nav-button:not(:disabled):hover {
+    background-color: #0056b3;
+}
+
+.checkbox-container {
+    margin-top: 20px;
+}
+
+.checkbox-container label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+.ending-screen {
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin: 20px auto;
+    max-width: 800px;
+    text-align: center;
+}
+
+.ending-screen h2 {
+    font-size: clamp(24px, 5vw, 32px);
+    color: #28a745;
+    margin-bottom: 20px;
+}
+
+.ending-screen p {
+    font-size: clamp(16px, 3vw, 20px);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.final-instruction {
+    color: #dc3545;
+    font-weight: bold;
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #fff8f8;
+    border-radius: 8px;
+}
+
+.download-section {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.download-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 30px;
+    font-size: 18px;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.download-button:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.download-button:active {
+    transform: translateY(0);
+}
+
+.download-icon {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    #options {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .option-button {
+        width: 90%;
+        margin: 10px 0;
+    }
+    
+    .control-panel {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .control-button {
+        flex: 1 1 calc(50% - 10px);
+        min-width: 120px;
+    }
 }

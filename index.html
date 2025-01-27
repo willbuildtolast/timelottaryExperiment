@@ -2,21 +2,102 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tableau Lottery Choice Experiment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consent Form - Time-Lottery Experiment</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .consent-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: left;
+        }
+        
+        .consent-text {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .consent-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .consent-button {
+            padding: 12px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .agree-button {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .disagree-button {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .agree-button:hover {
+            background-color: #218838;
+        }
+        
+        .disagree-button:hover {
+            background-color: #c82333;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Tableau Lottery Choice Experiment</h1>
-        <div class="instructions">
-            <p>Please select the option you prefer by clicking on it.</p>
+    <div class="consent-container">
+        <h1>Consent Form for Time-Lottery Experiment</h1>
+        
+        <div class="consent-text">
+            <p><strong>Principal Investigator:</strong> Laurence T. Maloney<br>
+            <strong>Experimenter:</strong> Will Zhang<br>
+            <strong>Institution:</strong> Department of Psychology, New York University<br>
+            <strong>Contact Information:</strong> wz2258@nyu.edu</p>
+
+            <h2>Purpose of the Study:</h2>
+            <p>You are invited to participate in a research study about decision-making and preferences under uncertainty and delay. The goal of this study is to understand how individuals make choices when faced with different lottery options involving time delays and varying probabilities of outcomes.</p>
+
+            <h2>What You Will Do in the Study:</h2>
+            <p>If you agree to participate, you will complete a series of tasks where you will choose between lottery options with different outcomes, probabilities, and time delays. The experiment is conducted online and will take approximately 60 minutes to complete.</p>
+
+            <h2>Risks and Discomforts:</h2>
+            <p>There are no known risks or discomforts associated with participating in this study. If you experience any discomfort or wish to stop participating at any time, you may do so without penalty.</p>
+
+            <h2>Confidentiality:</h2>
+            <p>Your responses will be anonymous and will not be linked to your identity. All data will be stored securely and used solely for research purposes. Only the research team will have access to the data.</p>
+
+            <h2>Voluntary Participation and Withdrawal:</h2>
+            <p>Your participation is voluntary. You may refuse to participate or withdraw at any time without penalty or loss of benefits. If you withdraw, any data you have provided will be discarded.</p>
+
+            <h2>Questions:</h2>
+            <p>If you have any questions about the study, please contact the experimenter, Will Zhang, at wz2258@nyu.edu. If you have questions about your rights as a research participant, you may contact the NYU Institutional Review Board at 11111111.</p>
+
+            <h2>Consent:</h2>
+            <p>By clicking the "I Agree" button below, you acknowledge that:</p>
+            <ul>
+                <li>You have read and understood the information provided above.</li>
+                <li>You voluntarily agree to participate in this study.</li>
+                <li>You are at least 18 years old (or meet the age of majority in your jurisdiction).</li>
+            </ul>
         </div>
-        <div id="trial-number"></div>
-        <div id="options">
-            <button id="optionA" class="option-button"></button>
-            <button id="optionB" class="option-button"></button>
+
+        <div class="consent-buttons">
+            <button class="consent-button agree-button" onclick="window.location.href='experiment.html'">I Agree</button>
+            <button class="consent-button disagree-button" onclick="window.location.href='exit.html'">I Do Not Agree</button>
         </div>
     </div>
-    <script src="script.js"></script>
 </body>
-</html>
+</html> 

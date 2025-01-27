@@ -1,3 +1,14 @@
+// Check if user came from consent page
+/*
+if (!document.referrer.includes('index.html')) {
+    window.location.href = 'index.html';
+}
+*/
+
+// Add this at the beginning of script.js, after the consent check
+let currentInstructionStep = 1;
+const totalSteps = 4;
+
 // Arrays of possible delays (in weeks), probabilities (in percentages), and values (in dollars)
 const delays = [1,2,3,4,5,6,7,8,9,10];
 const probabilities = [5,15,25,35,45,55,65,75,85,95];
@@ -11,6 +22,7 @@ let responses = [];
 let trialStartTime = 0; // Variable to store the start time of each trial
 let inPractice = true; // Flag to indicate if we're in practice trials
 let abnormalSelections = 0; // Counter for abnormal selections during practice
+let isPaused = false;
 
 // Function to generate a practice trial with obvious comparisons
 function generatePracticeTrial(trialNumber) {
@@ -137,27 +149,32 @@ function generateTrial() {
 
 // Function to display the current trial
 function displayTrial() {
+    if (isPaused) return;
+
     let trialData;
+    let progressPercentage;
 
     if (inPractice && currentTrial < practiceTrials) {
-        // Generate practice trial
         trialData = generatePracticeTrial(currentTrial + 1);
         document.getElementById('trial-number').innerHTML = `Practice Trial ${currentTrial + 1} of ${practiceTrials}`;
+        progressPercentage = (currentTrial / practiceTrials) * 100;
     } else if (inPractice && currentTrial >= practiceTrials) {
-        // Check if participant passed the practice trials
         inPractice = false;
         currentTrial = 0;
         alert('Practice trials completed. The main experiment will now begin.');
         displayTrial();
         return;
     } else if (currentTrial < totalTrials) {
-        // Generate main trial
         trialData = generateTrial();
         document.getElementById('trial-number').innerHTML = `Trial ${currentTrial + 1} of ${totalTrials}`;
+        progressPercentage = (currentTrial / totalTrials) * 100;
     } else {
         endExperiment();
         return;
     }
+
+    // Update progress bar
+    document.getElementById('progress-indicator').style.width = `${progressPercentage}%`;
 
     let optionAButton = document.getElementById('optionA');
     let optionBButton = document.getElementById('optionB');
@@ -165,14 +182,11 @@ function displayTrial() {
     optionAButton.innerHTML = trialData.optionA.text;
     optionBButton.innerHTML = trialData.optionB.text;
 
-    // Remove previous event listeners
     optionAButton.onclick = null;
     optionBButton.onclick = null;
 
-    // Record the start time of the trial
     trialStartTime = new Date().getTime();
 
-    // Add event listeners for choices
     optionAButton.onclick = () => recordResponse(0, trialData);
     optionBButton.onclick = () => recordResponse(1, trialData);
 }
@@ -214,35 +228,37 @@ function recordResponse(choice, trialData) {
 
 // Function to end the experiment and display the results
 function endExperiment() {
-    document.querySelector('.container').innerHTML = '<h2>Thank you for participating!</h2>';
+    document.querySelector('.container').innerHTML = `
+        <div class="ending-screen">
+            <h2>You have finished the experiment.</h2>
+            <p>Thank you for participating in this experiment.</p>
+            <p class="final-instruction">Please do not click on anything on the page and inform the experimenter that you have finished.</p>
+            <div class="download-section">
+                <button id="downloadBtn" class="download-button">
+                    <span class="download-icon">⬇</span>
+                    Download CSV Data
+                </button>
+            </div>
+        </div>
+    `;
 
-    // Prepare data for CSV export
-    prepareCSVDownload();
-
-    // Optionally, display the results on the page
-    let resultsDiv = document.createElement('div');
-    resultsDiv.innerHTML = '<h3>Your Choices:</h3>';
-    responses.forEach(response => {
-        let resText = `Trial ${response.trial}: Chose Option ${response.choice === 0 ? 'A' : 'B'}<br>`;
-        resText += `Option A - $${response.optionA.value}, ${response.optionA.probability}% chance in ${response.optionA.delay} week(s)<br>`;
-        resText += `Option B - $${response.optionB.value}, ${response.optionB.probability}% chance in ${response.optionB.delay} week(s)<br>`;
-        resText += `Response Time: ${response.responseTime} ms<br><br>`;
-        resultsDiv.innerHTML += resText;
-    });
-    document.body.appendChild(resultsDiv);
+    // Add click event listener to the download button
+    document.getElementById('downloadBtn').addEventListener('click', prepareCSVDownload);
 }
 
-// Function to prepare CSV data and create a download link
+// Update the CSV preparation function
 function prepareCSVDownload() {
     if (responses.length === 0) {
         return; // No data to export
     }
 
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "OptionA_Delay,OptionA_Probability,OptionA_Value,OptionB_Delay,OptionB_Probability,OptionB_Value,Choice,ResponseTime(ms)\n";
+    // Update header to include Trial_Number
+    csvContent += "Trial_Number,OptionA_Delay,OptionA_Probability,OptionA_Value,OptionB_Delay,OptionB_Probability,OptionB_Value,Choice,ResponseTime(ms)\n";
 
-    responses.forEach(response => {
+    responses.forEach((response, index) => {
         let row = [
+            index + 1, // Add trial number starting from 1
             response.optionA.delay,
             response.optionA.probability,
             response.optionA.value,
@@ -255,13 +271,114 @@ function prepareCSVDownload() {
         csvContent += row + "\n";
     });
 
-    // Create a link to download the CSV file
+    // Create and trigger download
     let encodedUri = encodeURI(csvContent);
-    let downloadLink = document.createElement("a");
-    downloadLink.setAttribute("href", encodedUri);
-    downloadLink.setAttribute("download", "experiment_data.csv");
-    downloadLink.innerHTML = "Download Data as CSV";
-    document.body.appendChild(downloadLink);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "experiment_data.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Add control button functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const exitBtn = document.getElementById('exitBtn');
+    const optionsDiv = document.getElementById('options');
+
+    pauseBtn.addEventListener('click', () => {
+        isPaused = true;
+        optionsDiv.classList.add('paused');
+        pauseBtn.style.display = 'none';
+        resumeBtn.style.display = 'inline-block';
+    });
+
+    resumeBtn.addEventListener('click', () => {
+        isPaused = false;
+        optionsDiv.classList.remove('paused');
+        resumeBtn.style.display = 'none';
+        pauseBtn.style.display = 'inline-block';
+        displayTrial();
+    });
+
+    resetBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to restart the experiment? All progress will be lost.')) {
+            currentTrial = 0;
+            responses = [];
+            inPractice = true;
+            abnormalSelections = 0;
+            isPaused = false;
+            optionsDiv.classList.remove('paused');
+            resumeBtn.style.display = 'none';
+            pauseBtn.style.display = 'inline-block';
+            displayTrial();
+        }
+    });
+
+    exitBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to exit the experiment? All progress will be lost.')) {
+            window.location.href = 'exit.html';
+        }
+    });
+
+    handleInstructions();
+});
+
+// Function to handle instruction navigation
+function handleInstructions() {
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const stepIndicator = document.getElementById('current-step');
+    const checkbox = document.getElementById('understand-checkbox');
+
+    function updateButtons() {
+        prevBtn.disabled = currentInstructionStep === 1;
+        nextBtn.disabled = currentInstructionStep === totalSteps && !checkbox.checked;
+        
+        if (currentInstructionStep === totalSteps) {
+            nextBtn.textContent = 'Start Experiment';
+        } else {
+            nextBtn.textContent = 'Next';
+        }
+    }
+
+    function showStep(step) {
+        // Hide all steps
+        for (let i = 1; i <= totalSteps; i++) {
+            document.getElementById(`step${i}`).style.display = 'none';
+        }
+        // Show current step
+        document.getElementById(`step${step}`).style.display = 'block';
+        stepIndicator.textContent = step;
+        updateButtons();
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentInstructionStep > 1) {
+            currentInstructionStep--;
+            showStep(currentInstructionStep);
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentInstructionStep < totalSteps) {
+            currentInstructionStep++;
+            showStep(currentInstructionStep);
+        } else if (checkbox.checked) {
+            // Start the experiment
+            document.getElementById('instructions-container').style.display = 'none';
+            document.getElementById('experiment-container').style.display = 'block';
+            displayTrial();
+        }
+    });
+
+    checkbox.addEventListener('change', updateButtons);
+
+    // Initialize first step
+    showStep(1);
 }
 
 // Start the experiment

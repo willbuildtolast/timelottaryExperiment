@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Time-Lottery Experiment</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Instructions section (initially visible) -->
+    <div id="instructions-container" class="instructions-container">
+        <div class="instructions-content">
+            <div class="instructions-header">
+                <h2>Instructions</h2>
+                <div class="step-indicator">Step <span id="current-step">1</span> of 4</div>
+            </div>
+            
+            <div class="instruction-steps">
+                <!-- Step 1 -->
+                <div class="step" id="step1">
+                    <h3>Welcome and Overview</h3>
+                    <p>Welcome to the experiment! In this study, you will make choices between different lottery options. Each choice involves probabilities, rewards, and time delays. This is a preference task, so there are no right or wrong answers. We are only interested in which option you prefer the most.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step" id="step2" style="display: none;">
+                    <h3>Understanding Lottery Options</h3>
+                    <p>Each lottery option has three key components:</p>
+                    <ul>
+                        <li><strong>Rewards:</strong> The amount you can win if the lottery is successful.</li>
+                        <li><strong>Probabilities:</strong> The chance of winning the reward.</li>
+                        <li><strong>Time delays:</strong> How long you might need to wait for the outcome.</li>
+                    </ul>
+                    <p>For example, you might see an option like: "50% chance to win $500 after 5 weeks"</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step" id="step3" style="display: none;">
+                    <h3>Making a Choice</h3>
+                    <p>You will see two options on the screen. Your task is to choose the option you prefer by clicking the button below it. Remember, this is about your personal preference—there is no right or wrong answer.</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step" id="step4" style="display: none;">
+                    <h3>Practice Trial Reminder</h3>
+                    <p>You will now complete a practice trial to get familiar with the task. Take your time to understand the options before making your choice.</p>
+                    <div class="checkbox-container">
+                        <label>
+                            <input type="checkbox" id="understand-checkbox">
+                            I understand the instructions and am ready to begin
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instruction-navigation">
+                <button id="prev-btn" class="nav-button" disabled>Back</button>
+                <button id="next-btn" class="nav-button">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main experiment container (initially hidden) -->
+    <div id="experiment-container" class="container" style="display: none;">
+        <div class="header">
+            <h1>Time-Lottery Experiment</h1>
+            <div class="progress-bar">
+                <div id="progress-indicator"></div>
+            </div>
+            <div id="trial-number" class="trial-counter"></div>
+        </div>
+        
+        <div class="instructions">
+            <p>Please select the option you prefer by clicking on it.</p>
+        </div>
+        
+        <div id="options">
+            <button id="optionA" class="option-button"></button>
+            <button id="optionB" class="option-button"></button>
+        </div>
+
+        <div class="control-panel">
+            <button id="pauseBtn" class="control-button">Pause</button>
+            <button id="resumeBtn" class="control-button" style="display: none;">Resume</button>
+            <button id="resetBtn" class="control-button">Reset</button>
+            <button id="exitBtn" class="control-button exit">Exit</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
