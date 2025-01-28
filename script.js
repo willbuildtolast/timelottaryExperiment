@@ -38,10 +38,10 @@ function generatePracticeTrial(trialNumber) {
     switch(trialNumber) {
         case 1:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$500, 0% chance in 3 month(s)`,
-                delay: 3,
-                probability: 0,
-                value: 500,
+                text: `Option {optionLabel}:<br>$0, 20% chance in 500 month(s)`,
+                delay: 500,
+                probability: 0.2,
+                value: 0,
                 isAbnormal: true
             };
             break;
@@ -56,8 +56,8 @@ function generatePracticeTrial(trialNumber) {
             break;
         case 3:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$500, 50% chance in 60 month(s)`,
-                delay: 60,
+                text: `Option {optionLabel}:<br>$500, 50% chance in 600 month(s)`,
+                delay: 600,
                 probability: 0.5,
                 value: 500,
                 isAbnormal: true
@@ -65,19 +65,19 @@ function generatePracticeTrial(trialNumber) {
             break;
         case 4:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$0, 0% chance in 5 week(s)`,
-                delay: 5,
-                probability: 0,
-                value: 0,
+                text: `Option {optionLabel}:<br>$500, 1% chance in 3 month(s)`,
+                delay: 3,
+                probability: 0.01,
+                value: 500,
                 isAbnormal: true
             };
             break;
         case 5:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$0, 0% chance in 52000 week(s)`,
-                delay: 52000,
-                probability: 0,
-                value: 0,
+                text: `Option {optionLabel}:<br>$0.1, 10% chance in 3 month(s)`,
+                delay: 3,
+                probability: 0.1,
+                value: 0.1,
                 isAbnormal: true
             };
             break;
@@ -196,7 +196,7 @@ function recordResponse(choice, trialData) {
             abnormalSelections++;
         }
         if (abnormalSelections > 3) {
-            alert('You have selected the less optimal option more than three times during the practice trials. Please pay attention to the choices. The practice trials will restart.');
+            alert('You have missed the dominant option more than three times during the practice trials. Please pay attention to the choices. The practice trials will restart.');
             currentTrial = 0;
             abnormalSelections = 0;
             displayTrial();
