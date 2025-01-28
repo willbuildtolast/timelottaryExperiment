@@ -10,13 +10,13 @@ let currentInstructionStep = 1;
 const totalSteps = 4;
 
 // Arrays of possible delays (in weeks), probabilities (in percentages), and values (in dollars)
-const delays = [1,2,3,4,5,6,7,8,9,10];
-const probabilities = [5,15,25,35,45,55,65,75,85,95];
-const values = [100,200,300,400,500,600,700,800,900,1000];
+const delays = [1, 2, 3, 4, 5]; // months
+const probabilities = [0.05, 0.275, 0.5, 0.725, 0.95]; // decimal probabilities
+const values = [100, 300, 500, 700, 900]; // dollars
 
 // Number of practice trials and main experiment trials
 const practiceTrials = 5;
-const totalTrials = 30;
+const totalTrials = 100;
 let currentTrial = 0;
 let responses = [];
 let trialStartTime = 0; // Variable to store the start time of each trial
@@ -27,9 +27,9 @@ let isPaused = false;
 // Function to generate a practice trial with obvious comparisons
 function generatePracticeTrial(trialNumber) {
     let normalOption = {
-        text: `Option {optionLabel}:<br>$500, 50% chance in 5 week(s)`,
-        delay: 5,
-        probability: 50,
+        text: `Option {optionLabel}:<br>$500, 50% chance in 3 month(s)`,
+        delay: 3,
+        probability: 0.5,
         value: 500,
         isAbnormal: false
     };
@@ -37,37 +37,33 @@ function generatePracticeTrial(trialNumber) {
     let abnormalOption;
     switch(trialNumber) {
         case 1:
-            // Option with 0% probability
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$500, 0% chance in 5 week(s)`,
-                delay: 5,
+                text: `Option {optionLabel}:<br>$500, 0% chance in 3 month(s)`,
+                delay: 3,
                 probability: 0,
                 value: 500,
                 isAbnormal: true
             };
             break;
         case 2:
-            // Option with $0 value
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$0, 50% chance in 5 week(s)`,
-                delay: 5,
-                probability: 50,
+                text: `Option {optionLabel}:<br>$0, 50% chance in 3 month(s)`,
+                delay: 3,
+                probability: 0.5,
                 value: 0,
                 isAbnormal: true
             };
             break;
         case 3:
-            // Option with extremely long delay
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$500, 50% chance in 52000 week(s)`,
-                delay: 52000, // Approximately 1000 years
-                probability: 50,
+                text: `Option {optionLabel}:<br>$500, 50% chance in 60 month(s)`,
+                delay: 60,
+                probability: 0.5,
                 value: 500,
                 isAbnormal: true
             };
             break;
         case 4:
-            // Option with 0% probability and $0 value
             abnormalOption = {
                 text: `Option {optionLabel}:<br>$0, 0% chance in 5 week(s)`,
                 delay: 5,
@@ -77,7 +73,6 @@ function generatePracticeTrial(trialNumber) {
             };
             break;
         case 5:
-            // Option with 0% probability, $0 value, and extremely long delay
             abnormalOption = {
                 text: `Option {optionLabel}:<br>$0, 0% chance in 52000 week(s)`,
                 delay: 52000,
@@ -127,9 +122,9 @@ function generateTrial() {
     let valuesForB = values.filter(value => value !== valueA);
     let valueB = valuesForB[Math.floor(Math.random() * valuesForB.length)];
 
-    // Create option texts
-    let optionAText = `Option A:<br>$${valueA}, ${probA}% chance in ${delayA} week(s)`;
-    let optionBText = `Option B:<br>$${valueB}, ${probB}% chance in ${delayB} week(s)`;
+    // Format probability as percentage for display
+    let optionAText = `Option A:<br>$${valueA}, ${(probA * 100).toFixed(1)}% chance in ${delayA} month(s)`;
+    let optionBText = `Option B:<br>$${valueB}, ${(probB * 100).toFixed(1)}% chance in ${delayB} month(s)`;
 
     return {
         optionA: {
@@ -193,29 +188,24 @@ function displayTrial() {
 
 // Function to record the user's response
 function recordResponse(choice, trialData) {
-    // Calculate response time
-    let responseTime = new Date().getTime() - trialStartTime; // in milliseconds
+    let responseTime = new Date().getTime() - trialStartTime;
 
     if (inPractice) {
-        // Check if the selected option is abnormal
         let selectedOption = choice === 0 ? trialData.optionA : trialData.optionB;
         if (selectedOption.isAbnormal) {
             abnormalSelections++;
         }
-        // Check if abnormalSelections > 3
         if (abnormalSelections > 3) {
             alert('You have selected the less optimal option more than three times during the practice trials. Please pay attention to the choices. The practice trials will restart.');
-            // Restart practice trials
             currentTrial = 0;
             abnormalSelections = 0;
             displayTrial();
             return;
         }
     } else {
-        // Only record responses during the main experiment
         responses.push({
             trial: currentTrial + 1,
-            choice: choice, // 0 for Option A, 1 for Option B
+            choice: choice,
             responseTime: responseTime,
             optionA: trialData.optionA,
             optionB: trialData.optionB
@@ -223,7 +213,8 @@ function recordResponse(choice, trialData) {
     }
 
     currentTrial++;
-    displayTrial();
+    showBlankPage();
+    setTimeout(displayTrial, 500);
 }
 
 // Function to end the experiment and display the results
@@ -290,18 +281,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const optionsDiv = document.getElementById('options');
 
     pauseBtn.addEventListener('click', () => {
-        isPaused = true;
-        optionsDiv.classList.add('paused');
-        pauseBtn.style.display = 'none';
-        resumeBtn.style.display = 'inline-block';
+        handlePause();
     });
 
     resumeBtn.addEventListener('click', () => {
-        isPaused = false;
-        optionsDiv.classList.remove('paused');
-        resumeBtn.style.display = 'none';
-        pauseBtn.style.display = 'inline-block';
-        displayTrial();
+        handleResume();
     });
 
     resetBtn.addEventListener('click', () => {
@@ -311,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
             inPractice = true;
             abnormalSelections = 0;
             isPaused = false;
-            optionsDiv.classList.remove('paused');
+            optionsDiv.style.display = 'flex';
             resumeBtn.style.display = 'none';
             pauseBtn.style.display = 'inline-block';
             displayTrial();
@@ -379,6 +363,49 @@ function handleInstructions() {
 
     // Initialize first step
     showStep(1);
+}
+
+// Add blank page transition function
+function showBlankPage() {
+    const optionsDiv = document.getElementById('options');
+    optionsDiv.style.opacity = '0';
+    
+    setTimeout(() => {
+        optionsDiv.style.opacity = '1';
+    }, 500); // 0.5 second blank page
+}
+
+// Update pause functionality
+function handlePause() {
+    const optionsDiv = document.getElementById('options');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+
+    isPaused = true;
+    optionsDiv.style.display = 'none';
+    document.querySelector('.paused-message')?.remove();
+    
+    const pausedMessage = document.createElement('div');
+    pausedMessage.className = 'paused-message';
+    pausedMessage.textContent = 'PAUSED';
+    document.querySelector('.container').insertBefore(pausedMessage, optionsDiv);
+    
+    pauseBtn.style.display = 'none';
+    resumeBtn.style.display = 'inline-block';
+}
+
+function handleResume() {
+    const optionsDiv = document.getElementById('options');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+
+    isPaused = false;
+    optionsDiv.style.display = 'flex';
+    document.querySelector('.paused-message')?.remove();
+    
+    resumeBtn.style.display = 'none';
+    pauseBtn.style.display = 'inline-block';
+    displayTrial();
 }
 
 // Start the experiment
