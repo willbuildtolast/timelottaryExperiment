@@ -71,8 +71,9 @@ h1 {
     height: 16px;
     background-color: #e9ecef;
     border-radius: 6px;
-    margin: 20px 0;
+    margin: 30px 0;
     overflow: hidden;
+    position: relative;
 }
 
 #progress-indicator {
@@ -84,10 +85,14 @@ h1 {
 }
 
 .trial-counter {
-    font-size: clamp(20px, 4vw, 28px);
+    font-size: clamp(22px, 4vw, 30px);
     margin: 20px 0;
     color: #495057;
     font-weight: bold;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .control-panel {
@@ -339,4 +344,23 @@ h1 {
         flex: 1 1 calc(50% - 10px);
         min-width: 120px;
     }
+}
+
+/* Add milestone indicator for every 100 trials */
+.milestone {
+    position: absolute;
+    width: 4px;
+    height: 20px;
+    background-color: #28a745;
+    transform: translateX(-50%);
+}
+
+.milestone::after {
+    content: attr(data-trial);
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #666;
 }

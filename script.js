@@ -10,13 +10,13 @@ let currentInstructionStep = 1;
 const totalSteps = 4;
 
 // Arrays of possible delays (in weeks), probabilities (in percentages), and values (in dollars)
-const delays = [1, 2, 3, 4, 5]; // months
-const probabilities = [0.05, 0.275, 0.5, 0.725, 0.95]; // decimal probabilities
+const delays = [2, 4, 6, 8, 10]; // months
+const probabilities = [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95];
 const values = [100, 300, 500, 700, 900]; // dollars
 
 // Number of practice trials and main experiment trials
 const practiceTrials = 5;
-const totalTrials = 100;
+const totalTrials = 300;
 let currentTrial = 0;
 let responses = [];
 let trialStartTime = 0; // Variable to store the start time of each trial
@@ -27,8 +27,8 @@ let isPaused = false;
 // Function to generate a practice trial with obvious comparisons
 function generatePracticeTrial(trialNumber) {
     let normalOption = {
-        text: `Option {optionLabel}:<br>$500, 50% chance in 3 month(s)`,
-        delay: 3,
+        text: `Option {optionLabel}:<br>$500, 50% chance in 4 months`,
+        delay: 4,
         probability: 0.5,
         value: 500,
         isAbnormal: false
@@ -38,17 +38,17 @@ function generatePracticeTrial(trialNumber) {
     switch(trialNumber) {
         case 1:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$0, 20% chance in 500 month(s)`,
-                delay: 500,
-                probability: 0.2,
+                text: `Option {optionLabel}:<br>$0, 5% chance in 10 months`,
+                delay: 10,
+                probability: 0.05,
                 value: 0,
                 isAbnormal: true
             };
             break;
         case 2:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$0, 50% chance in 3 month(s)`,
-                delay: 3,
+                text: `Option {optionLabel}:<br>$0, 50% chance in 4 months`,
+                delay: 4,
                 probability: 0.5,
                 value: 0,
                 isAbnormal: true
@@ -56,8 +56,8 @@ function generatePracticeTrial(trialNumber) {
             break;
         case 3:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$500, 50% chance in 600 month(s)`,
-                delay: 600,
+                text: `Option {optionLabel}:<br>$500, 50% chance in 20 months`,
+                delay: 20,
                 probability: 0.5,
                 value: 500,
                 isAbnormal: true
@@ -65,35 +65,30 @@ function generatePracticeTrial(trialNumber) {
             break;
         case 4:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$500, 1% chance in 3 month(s)`,
-                delay: 3,
-                probability: 0.01,
+                text: `Option {optionLabel}:<br>$500, 5% chance in 4 months`,
+                delay: 4,
+                probability: 0.05,
                 value: 500,
                 isAbnormal: true
             };
             break;
         case 5:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$0.1, 10% chance in 3 month(s)`,
-                delay: 3,
-                probability: 0.1,
-                value: 0.1,
+                text: `Option {optionLabel}:<br>$100, 15% chance in 4 months`,
+                delay: 4,
+                probability: 0.15,
+                value: 100,
                 isAbnormal: true
             };
             break;
         default:
-            // Fallback to a normal trial generation (should not reach here)
             return generateTrial();
     }
 
-    // Randomly assign the normal and abnormal options to Option A or B
     let options = [normalOption, abnormalOption];
-    // Randomly shuffle the options array
     if (Math.random() < 0.5) {
-        // Swap options
         [options[0], options[1]] = [options[1], options[0]];
     }
-    // Update option labels in the text
     options[0].text = options[0].text.replace('{optionLabel}', 'A');
     options[1].text = options[1].text.replace('{optionLabel}', 'B');
 
@@ -156,13 +151,18 @@ function displayTrial() {
     } else if (inPractice && currentTrial >= practiceTrials) {
         inPractice = false;
         currentTrial = 0;
-        alert('Practice trials completed. The main experiment will now begin.');
+        alert('Practice trials completed. The main experiment will now begin. You will complete 300 trials.');
         displayTrial();
         return;
     } else if (currentTrial < totalTrials) {
         trialData = generateTrial();
         document.getElementById('trial-number').innerHTML = `Trial ${currentTrial + 1} of ${totalTrials}`;
         progressPercentage = (currentTrial / totalTrials) * 100;
+        
+        // Add a reminder every 100 trials
+        if (currentTrial > 0 && currentTrial % 100 === 0) {
+            alert(`You have completed ${currentTrial} trials. Take a short break if needed.`);
+        }
     } else {
         endExperiment();
         return;
