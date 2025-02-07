@@ -15,7 +15,7 @@ Follow these steps to implement the experiment locally:
 ### 2️⃣ Download the Repository  
 
 
-1. Download everything in the Repository.   
+1. Download every file in the Repository.   
 
 ### 3️⃣ Set Up the Project in VS Code  
 
