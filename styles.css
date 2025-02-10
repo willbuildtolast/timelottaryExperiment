@@ -364,3 +364,248 @@ h1 {
     font-size: 12px;
     color: #666;
 }
+
+/* Add styles for lottery modal */
+.lottery-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.lottery-modal-content {
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 600px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.lottery-modal h3 {
+    color: #28a745;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.modal-close-btn {
+    margin-top: 20px;
+    padding: 10px 25px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.modal-close-btn:hover {
+    background-color: #0056b3;
+}
+
+.compensation-details {
+    margin: 30px 0;
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.compensation-details h3 {
+    color: #495057;
+    margin-bottom: 15px;
+}
+
+.total-payment {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #dee2e6;
+    font-size: 24px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.lottery-options {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    gap: 20px;
+}
+
+.lottery-option {
+    flex: 1;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid transparent;
+}
+
+.lottery-option.selected {
+    border-color: #28a745;
+    background-color: #f0fff4;
+}
+
+.lottery-animation {
+    margin: 30px 0;
+    text-align: center;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #28a745;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.win-details {
+    background-color: #f0fff4;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.bonus-calculation {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+.bonus-calculation p {
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+/* Instruction section styles */
+.instruction-section {
+    margin: 25px 0;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.instruction-section h4 {
+    color: #28a745;
+    margin-bottom: 15px;
+}
+
+.instruction-section ul {
+    padding-left: 20px;
+}
+
+.instruction-section li {
+    margin: 10px 0;
+}
+
+/* Summary table styles */
+.real-lottery-summary {
+    margin: 30px 0;
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.summary-table {
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+.summary-table table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.summary-table th, 
+.summary-table td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.summary-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.selected-option {
+    background-color: #f0fff4;
+    font-weight: 500;
+    border-left: 3px solid #28a745;
+}
+
+/* Payment breakdown styles */
+.payment-breakdown {
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* Warning section styles */
+.warning-section {
+    margin: 0 0 30px 0;
+    text-align: left;
+}
+
+.warning-message {
+    background-color: #fff3cd;
+    border: 2px solid #ffeeba;
+    color: #856404;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.warning-message h4 {
+    color: #dc3545;
+    font-size: 20px;
+    margin: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+}
+
+.warning-icon {
+    font-size: 24px;
+    margin-right: 10px;
+    color: #dc3545;
+}
+
+.warning-message p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.final-instructions {
+    margin: 20px 0;
+}
+
+.notify-button,
+.notify-icon,
+.bonus-schedule {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .summary-table {
+        font-size: 14px;
+    }
+    
+    .summary-table th, 
+    .summary-table td {
+        padding: 8px;
+    }
+}

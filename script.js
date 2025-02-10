@@ -16,13 +16,18 @@ const values = [100, 300, 500, 700, 900]; // dollars
 
 // Number of practice trials and main experiment trials
 const practiceTrials = 5;
-const totalTrials = 300;
+const totalTrials = 400;
 let currentTrial = 0;
 let responses = [];
 let trialStartTime = 0; // Variable to store the start time of each trial
 let inPractice = true; // Flag to indicate if we're in practice trials
 let abnormalSelections = 0; // Counter for abnormal selections during practice
 let isPaused = false;
+
+// Add new constants and variables
+const basePayment = 15;
+const realLotteryTrials = new Set();
+let totalBonus = 0;
 
 // Function to generate a practice trial with obvious comparisons
 function generatePracticeTrial(trialNumber) {
@@ -151,7 +156,7 @@ function displayTrial() {
     } else if (inPractice && currentTrial >= practiceTrials) {
         inPractice = false;
         currentTrial = 0;
-        alert('Practice trials completed. The main experiment will now begin. You will complete 300 trials.');
+        alert('Practice trials completed. The main experiment will now begin. You will complete 400 trials.');
         displayTrial();
         return;
     } else if (currentTrial < totalTrials) {
@@ -186,8 +191,91 @@ function displayTrial() {
     optionBButton.onclick = () => recordResponse(1, trialData);
 }
 
-// Function to record the user's response
-function recordResponse(choice, trialData) {
+// Function to select random real lottery trials
+function selectRealLotteryTrials() {
+    while (realLotteryTrials.size < 3) {
+        // Select trials between 50 and 350 to avoid clustering at start/end
+        const trial = Math.floor(Math.random() * 300) + 50;
+        realLotteryTrials.add(trial);
+    }
+}
+
+// Function to execute real lottery
+async function executeRealLottery(choice, trialData) {
+    const selectedOption = choice === 0 ? trialData.optionA : trialData.optionB;
+    const unselectedOption = choice === 0 ? trialData.optionB : trialData.optionA;
+    const randomNum = Math.random();
+    const won = randomNum <= selectedOption.probability;
+    const bonus = won ? selectedOption.value * 0.01 : 0;
+    totalBonus += bonus;
+
+    const modal = document.createElement('div');
+    modal.className = 'lottery-modal';
+    
+    // Create detailed feedback content
+    modal.innerHTML = `
+        <div class="lottery-modal-content">
+            <h3>Real Lottery Trial</h3>
+            
+            <div class="lottery-options">
+                <div class="lottery-option ${choice === 0 ? 'selected' : ''}">
+                    <h4>Option A</h4>
+                    <p>$${trialData.optionA.value}</p>
+                    <p>${(trialData.optionA.probability * 100).toFixed(0)}% chance</p>
+                    <p>${trialData.optionA.delay} months delay</p>
+                </div>
+                <div class="lottery-option ${choice === 1 ? 'selected' : ''}">
+                    <h4>Option B</h4>
+                    <p>$${trialData.optionB.value}</p>
+                    <p>${(trialData.optionB.probability * 100).toFixed(0)}% chance</p>
+                    <p>${trialData.optionB.delay} months delay</p>
+                </div>
+            </div>
+
+            <div class="lottery-animation">
+                <div class="spinner"></div>
+                <p>Executing lottery...</p>
+            </div>
+
+            <div class="lottery-result" style="display: none;">
+                <h4>${won ? 'Congratulations!' : 'Not This Time'}</h4>
+                ${won ? `
+                    <div class="win-details">
+                        <p>You won this lottery!</p>
+                        <div class="bonus-calculation">
+                            <p>Winning amount: $${selectedOption.value}</p>
+                            <p>Bonus (1%): $${bonus.toFixed(2)}</p>
+                            <p>Payment due: In ${selectedOption.delay} months</p>
+                        </div>
+                    </div>
+                ` : `
+                    <p>The lottery result was unsuccessful this time.</p>
+                `}
+            </div>
+
+            <button class="modal-close-btn" style="display: none;">Continue</button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Animate the lottery execution
+    return new Promise(resolve => {
+        setTimeout(() => {
+            modal.querySelector('.lottery-animation').style.display = 'none';
+            modal.querySelector('.lottery-result').style.display = 'block';
+            modal.querySelector('.modal-close-btn').style.display = 'block';
+        }, 2000);
+
+        modal.querySelector('.modal-close-btn').onclick = () => {
+            document.body.removeChild(modal);
+            resolve();
+        };
+    });
+}
+
+// Modify recordResponse function to include outcome information
+async function recordResponse(choice, trialData) {
     let responseTime = new Date().getTime() - trialStartTime;
 
     if (inPractice) {
@@ -203,13 +291,34 @@ function recordResponse(choice, trialData) {
             return;
         }
     } else {
+        const selectedOption = choice === 0 ? trialData.optionA : trialData.optionB;
+        let outcome = null;
+        
+        if (realLotteryTrials.has(currentTrial)) {
+            const randomNum = Math.random();
+            const won = randomNum <= selectedOption.probability;
+            const bonus = won ? selectedOption.value * 0.01 : 0;
+            
+            outcome = won ? 
+                `Won $${bonus.toFixed(2)} bonus, paid in ${selectedOption.delay} months` : 
+                'Did not win';
+                
+            if (won) totalBonus += bonus;
+        }
+
         responses.push({
             trial: currentTrial + 1,
             choice: choice,
             responseTime: responseTime,
             optionA: trialData.optionA,
-            optionB: trialData.optionB
+            optionB: trialData.optionB,
+            isRealLottery: realLotteryTrials.has(currentTrial),
+            outcome: outcome
         });
+
+        if (realLotteryTrials.has(currentTrial)) {
+            await executeRealLottery(choice, trialData);
+        }
     }
 
     currentTrial++;
@@ -217,13 +326,71 @@ function recordResponse(choice, trialData) {
     setTimeout(displayTrial, 500);
 }
 
-// Function to end the experiment and display the results
+// Modify endExperiment function
 function endExperiment() {
+    // Filter real lottery trials from responses
+    const realLotteryResults = responses.filter(response => response.isRealLottery);
+    
     document.querySelector('.container').innerHTML = `
         <div class="ending-screen">
-            <h2>You have finished the experiment.</h2>
-            <p>Thank you for participating in this experiment.</p>
-            <p class="final-instruction">Please do not click on anything on the page and inform the experimenter that you have finished.</p>
+            <div class="warning-section">
+                <div class="warning-message">
+                    <span class="warning-icon">⚠</span>
+                    <h4>Important: Do NOT close this page!</h4>
+                    <p>Your responses and bonus calculations are being recorded. 
+                    If you close this page now, all data may be lost, and we may not be able to compensate you properly.</p>
+                    <p>Please notify the researcher that you have finished. They will confirm your data has been saved 
+                    and process your payment.</p>
+                </div>
+            </div>
+
+            <h2>Experiment Complete!</h2>
+            
+            <div class="real-lottery-summary">
+                <h3>Real Lottery Results</h3>
+                <div class="summary-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Trial</th>
+                                <th>Option A</th>
+                                <th>Option B</th>
+                                <th>Your Choice</th>
+                                <th>Outcome</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${realLotteryResults.map(trial => `
+                                <tr>
+                                    <td>Trial ${trial.trial}</td>
+                                    <td class="${trial.choice === 0 ? 'selected-option' : ''}">
+                                        $${trial.optionA.value}, ${(trial.optionA.probability * 100).toFixed(0)}%<br>
+                                        ${trial.optionA.delay} months
+                                    </td>
+                                    <td class="${trial.choice === 1 ? 'selected-option' : ''}">
+                                        $${trial.optionB.value}, ${(trial.optionB.probability * 100).toFixed(0)}%<br>
+                                        ${trial.optionB.delay} months
+                                    </td>
+                                    <td>Option ${trial.choice === 0 ? 'A' : 'B'}</td>
+                                    <td>${trial.outcome}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="compensation-details">
+                <h3>Final Compensation</h3>
+                <div class="payment-breakdown">
+                    <p>Base Payment: <span class="amount">$${basePayment.toFixed(2)}</span></p>
+                    <p>Total Bonus Earned: <span class="amount">$${totalBonus.toFixed(2)}</span></p>
+                    <p class="total-payment">
+                        Total Earnings: $${(basePayment + totalBonus).toFixed(2)}
+                    </p>
+                </div>
+            </div>
+
             <div class="download-section">
                 <button id="downloadBtn" class="download-button">
                     <span class="download-icon">⬇</span>
@@ -233,8 +400,44 @@ function endExperiment() {
         </div>
     `;
 
-    // Add click event listener to the download button
     document.getElementById('downloadBtn').addEventListener('click', prepareCSVDownload);
+}
+
+// Helper function to generate bonus payment schedule
+function generateBonusSchedule(realLotteryResults) {
+    const schedule = {};
+    
+    realLotteryResults.forEach(trial => {
+        const selectedOption = trial.choice === 0 ? trial.optionA : trial.optionB;
+        const delay = selectedOption.delay;
+        if (trial.bonus > 0) {
+            schedule[delay] = (schedule[delay] || 0) + trial.bonus;
+        }
+    });
+
+    if (Object.keys(schedule).length === 0) {
+        return '<p>No bonus payments earned</p>';
+    }
+
+    return Object.entries(schedule)
+        .sort(([a], [b]) => Number(a) - Number(b))
+        .map(([delay, amount]) => `
+            <p>${delay === '0' ? 
+                `$${amount.toFixed(2)} will be paid immediately` : 
+                `$${amount.toFixed(2)} will be paid in ${delay} months`
+            }</p>
+        `).join('');
+}
+
+// Handle notify researcher button click
+function handleNotifyResearcher() {
+    const notifyBtn = document.getElementById('notifyBtn');
+    notifyBtn.disabled = true;
+    notifyBtn.innerHTML = `
+        <span class="notify-icon">✓</span>
+        Researcher Notified
+    `;
+    notifyBtn.classList.add('notified');
 }
 
 // Update the CSV preparation function
@@ -309,6 +512,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     handleInstructions();
+    selectRealLotteryTrials();
 });
 
 // Function to handle instruction navigation
@@ -363,6 +567,39 @@ function handleInstructions() {
 
     // Initialize first step
     showStep(1);
+
+    // Update Step 2 in handleInstructions to include real lottery explanation
+    const step2Content = document.getElementById('step2');
+    step2Content.innerHTML = `
+        <h3>Understanding Lottery Options & Real Rewards</h3>
+        <div class="instruction-section">
+            <h4>Basic Lottery Structure</h4>
+            <ul>
+                <li><strong>Rewards:</strong> The amount you can win ($100 to $900)</li>
+                <li><strong>Probabilities:</strong> Your chance of winning (5% to 95%)</li>
+                <li><strong>Time delays:</strong> When you receive the reward (2 to 10 months)</li>
+            </ul>
+        </div>
+        
+        <div class="instruction-section">
+            <h4>Real Money Opportunities</h4>
+            <p>There are some random trials in this experiment that will be real lotteries with actual monetary rewards:</p>
+            <ul>
+                <li>You won't know which trials are real in advance</li>
+                <li>If you win a real lottery, you'll receive 1% of the chosen amount as bonus</li>
+                <li>Bonuses are paid according to the delay period of your chosen lottery</li>
+            </ul>
+        </div>
+        
+        <div class="instruction-section">
+            <h4>Example</h4>
+            <p>If you choose a lottery offering "$500 with 50% chance after 4 months" and win:</p>
+            <ul>
+                <li>Bonus amount: $5.00 (1% of $500)</li>
+                <li>Payment timing: 4 months after the experiment</li>
+            </ul>
+        </div>
+    `;
 }
 
 // Add blank page transition function
