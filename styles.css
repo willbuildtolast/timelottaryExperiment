@@ -1,6 +1,7 @@
 body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: #f9f9f9;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%);
+    background-attachment: fixed;
     color: #333333;
     text-align: center;
     margin: 0;
@@ -8,12 +9,18 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 30px 20px;
+    padding: 30px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 20px;
+    box-shadow: 
+        0 10px 20px rgba(0,0,0,0.05),
+        0 6px 6px rgba(0,0,0,0.1);
     flex: 1;
 }
 
@@ -37,22 +44,91 @@ h1 {
 
 .option-button {
     width: clamp(300px, 50vw, 500px);
-    min-height: 150px;
-    padding: 25px;
+    min-height: 200px;
+    padding: 30px;
     margin: 20px;
-    font-size: clamp(20px, 4vw, 28px);
-    background-color: #4CAF50;
-    color: white;
+    font-size: clamp(18px, 3vw, 24px);
+    background: white;
+    color: #2c3e50;
     border: none;
-    border-radius: 12px;
+    border-radius: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 
+        0 4px 6px rgba(0,0,0,0.1),
+        0 1px 3px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.option-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: linear-gradient(90deg, #4CAF50, #45a049);
+    border-radius: 15px 15px 0 0;
+}
+
+.option-button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: repeating-linear-gradient(
+        90deg,
+        #ddd,
+        #ddd 10px,
+        transparent 10px,
+        transparent 20px
+    );
+}
+
+.lottery-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.reward-amount {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.probability {
+    font-size: 1.2em;
+    color: #4CAF50;
+}
+
+.delay-time {
+    font-size: 1em;
+    color: #666;
 }
 
 .option-button:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    box-shadow: 
+        0 8px 15px rgba(0,0,0,0.1),
+        0 3px 6px rgba(0,0,0,0.08);
+    background: linear-gradient(to bottom, white, #f8f9fa);
+}
+
+.option-button:active {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 12px rgba(0,0,0,0.1),
+        0 2px 4px rgba(0,0,0,0.08);
 }
 
 #options {
@@ -68,20 +144,44 @@ h1 {
 
 .progress-bar {
     width: 100%;
-    height: 16px;
-    background-color: #e9ecef;
-    border-radius: 6px;
+    height: 20px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 10px;
     margin: 30px 0;
     overflow: hidden;
     position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
 }
 
 #progress-indicator {
     height: 100%;
-    background-color: #4CAF50;
+    background: linear-gradient(90deg, #4CAF50, #45a049);
     width: 0%;
     transition: width 0.4s ease-in-out;
-    border-radius: 6px;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+#progress-indicator::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.2),
+        transparent
+    );
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
 }
 
 .trial-counter {
@@ -322,7 +422,7 @@ h1 {
 
 @media (max-width: 768px) {
     .container {
-        padding: 15px;
+        padding: 20px;
     }
     
     #options {
@@ -332,7 +432,8 @@ h1 {
     
     .option-button {
         width: 90%;
-        margin: 10px 0;
+        min-height: 180px;
+        margin: 15px auto;
     }
     
     .control-panel {
@@ -608,4 +709,20 @@ h1 {
     .summary-table td {
         padding: 8px;
     }
+}
+
+/* Add subtle lottery-themed background pattern */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(255,255,255,0.2) 1%, transparent 1%),
+        radial-gradient(circle at 75% 75%, rgba(255,255,255,0.2) 1%, transparent 1%);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: -1;
 }

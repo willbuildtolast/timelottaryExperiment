@@ -61,28 +61,28 @@ function generatePracticeTrial(trialNumber) {
             break;
         case 3:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$500, 50% chance in 20 months`,
+                text: `Option {optionLabel}:<br>$1, 1% chance in 20 months`,
                 delay: 20,
-                probability: 0.5,
-                value: 500,
+                probability: 0.01,
+                value: 1,
                 isAbnormal: true
             };
             break;
         case 4:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$500, 5% chance in 4 months`,
+                text: `Option {optionLabel}:<br>$5, 5% chance in 4 months`,
                 delay: 4,
                 probability: 0.05,
-                value: 500,
+                value: 5,
                 isAbnormal: true
             };
             break;
         case 5:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$100, 15% chance in 4 months`,
+                text: `Option {optionLabel}:<br>$1, 15% chance in 4 months`,
                 delay: 4,
                 probability: 0.15,
-                value: 100,
+                value: 1,
                 isAbnormal: true
             };
             break;
