@@ -29,6 +29,9 @@ const basePayment = 15;
 const realLotteryTrials = new Set();
 let totalBonus = 0;
 
+// Global variable to store real lottery outcomes
+let realLotteryOutcomes = new Map();
+
 // Function to generate a practice trial with obvious comparisons
 function generatePracticeTrial(trialNumber) {
     let normalOption = {
@@ -203,16 +206,25 @@ function selectRealLotteryTrials() {
 // Function to execute real lottery
 async function executeRealLottery(choice, trialData) {
     const selectedOption = choice === 0 ? trialData.optionA : trialData.optionB;
-    const unselectedOption = choice === 0 ? trialData.optionB : trialData.optionA;
-    const randomNum = Math.random();
-    const won = randomNum <= selectedOption.probability;
-    const bonus = won ? selectedOption.value * 0.01 : 0;
-    totalBonus += bonus;
+    
+    // Determine outcome if not already stored
+    if (!realLotteryOutcomes.has(currentTrial)) {
+        const randomNum = Math.random();
+        const won = randomNum <= selectedOption.probability;
+        const bonus = won ? selectedOption.value * 0.01 : 0;
+        
+        realLotteryOutcomes.set(currentTrial, {
+            won: won,
+            bonus: bonus,
+            delay: selectedOption.delay
+        });
+    }
+    
+    const outcome = realLotteryOutcomes.get(currentTrial);
 
     const modal = document.createElement('div');
     modal.className = 'lottery-modal';
     
-    // Create detailed feedback content
     modal.innerHTML = `
         <div class="lottery-modal-content">
             <h3>Real Lottery Trial</h3>
@@ -238,14 +250,14 @@ async function executeRealLottery(choice, trialData) {
             </div>
 
             <div class="lottery-result" style="display: none;">
-                <h4>${won ? 'Congratulations!' : 'Not This Time'}</h4>
-                ${won ? `
+                <h4>${outcome.won ? 'Congratulations!' : 'Not This Time'}</h4>
+                ${outcome.won ? `
                     <div class="win-details">
                         <p>You won this lottery!</p>
                         <div class="bonus-calculation">
                             <p>Winning amount: $${selectedOption.value}</p>
-                            <p>Bonus (1%): $${bonus.toFixed(2)}</p>
-                            <p>Payment due: In ${selectedOption.delay} months</p>
+                            <p>Bonus (1%): $${outcome.bonus.toFixed(2)}</p>
+                            <p>Payment due: In ${outcome.delay} months</p>
                         </div>
                     </div>
                 ` : `
@@ -259,7 +271,6 @@ async function executeRealLottery(choice, trialData) {
 
     document.body.appendChild(modal);
 
-    // Animate the lottery execution
     return new Promise(resolve => {
         setTimeout(() => {
             modal.querySelector('.lottery-animation').style.display = 'none';
@@ -274,7 +285,7 @@ async function executeRealLottery(choice, trialData) {
     });
 }
 
-// Modify recordResponse function to include outcome information
+// Modify recordResponse function to use stored outcomes
 async function recordResponse(choice, trialData) {
     let responseTime = new Date().getTime() - trialStartTime;
 
@@ -295,15 +306,12 @@ async function recordResponse(choice, trialData) {
         let outcome = null;
         
         if (realLotteryTrials.has(currentTrial)) {
-            const randomNum = Math.random();
-            const won = randomNum <= selectedOption.probability;
-            const bonus = won ? selectedOption.value * 0.01 : 0;
+            await executeRealLottery(choice, trialData);
+            const lotteryOutcome = realLotteryOutcomes.get(currentTrial);
             
-            outcome = won ? 
-                `Won $${bonus.toFixed(2)} bonus, paid in ${selectedOption.delay} months` : 
+            outcome = lotteryOutcome.won ? 
+                `Won $${lotteryOutcome.bonus.toFixed(2)} bonus, paid in ${lotteryOutcome.delay} months` : 
                 'Did not win';
-                
-            if (won) totalBonus += bonus;
         }
 
         responses.push({
@@ -315,10 +323,6 @@ async function recordResponse(choice, trialData) {
             isRealLottery: realLotteryTrials.has(currentTrial),
             outcome: outcome
         });
-
-        if (realLotteryTrials.has(currentTrial)) {
-            await executeRealLottery(choice, trialData);
-        }
     }
 
     currentTrial++;
@@ -326,8 +330,12 @@ async function recordResponse(choice, trialData) {
     setTimeout(displayTrial, 500);
 }
 
-// Modify endExperiment function
+// Modify endExperiment function to use stored outcomes
 function endExperiment() {
+    // Recalculate total bonus to ensure accuracy
+    totalBonus = Array.from(realLotteryOutcomes.values())
+        .reduce((sum, outcome) => sum + outcome.bonus, 0);
+    
     // Filter real lottery trials from responses
     const realLotteryResults = responses.filter(response => response.isRealLottery);
     
