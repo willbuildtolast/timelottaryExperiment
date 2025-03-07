@@ -10,7 +10,7 @@ let currentInstructionStep = 1;
 const totalSteps = 4;
 
 // Arrays of possible delays (in weeks), probabilities (in percentages), and values (in dollars)
-const delays = [2, 4, 6, 8, 10]; // months
+const delays = [1/30, 1/4, 1, 5, 12]; // 1 day, 1 week, 1 month, 5 months, 1 year
 const probabilities = [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95];
 const values = [100, 300, 500, 700, 900]; // dollars
 
@@ -39,9 +39,9 @@ function generatePracticeTrial(trialNumber) {
                <div class="lottery-details">
                    <div class="reward-amount">$500</div>
                    <div class="probability">50% chance</div>
-                   <div class="delay-time">in 4 months</div>
+                   <div class="delay-time">in 1 month</div>
                </div>`,
-        delay: 4,
+        delay: 1,
         probability: 0.5,
         value: 500,
         isAbnormal: false
@@ -160,13 +160,13 @@ function generateTrial() {
                        <div class="lottery-details">
                            <div class="reward-amount">$${valueA}</div>
                            <div class="probability">${(probA * 100).toFixed(1)}% chance</div>
-                           <div class="delay-time">in ${delayA} month(s)</div>
+                           <div class="delay-time">in ${formatDelay(delayA)}</div>
                        </div>`;
     let optionBText = `Option B:<br>
                        <div class="lottery-details">
                            <div class="reward-amount">$${valueB}</div>
                            <div class="probability">${(probB * 100).toFixed(1)}% chance</div>
-                           <div class="delay-time">in ${delayB} month(s)</div>
+                           <div class="delay-time">in ${formatDelay(delayB)}</div>
                        </div>`;
 
     return {
@@ -183,6 +183,17 @@ function generateTrial() {
             value: valueB
         }
     };
+}
+
+function formatDelay(delay) {
+    switch (delay) {
+        case 1/30: return "1 day";
+        case 1/4: return "1 week";
+        case 1: return "1 month";
+        case 5: return "5 months";
+        case 12: return "1 year";
+        default: return `${delay} months`;
+    }
 }
 
 // Function to display the current trial
@@ -274,13 +285,13 @@ async function executeRealLottery(choice, trialData) {
                     <h4>Option A</h4>
                     <p>$${trialData.optionA.value}</p>
                     <p>${(trialData.optionA.probability * 100).toFixed(0)}% chance</p>
-                    <p>${trialData.optionA.delay} months delay</p>
+                    <p>${formatDelay(trialData.optionA.delay)}</p>
                 </div>
                 <div class="lottery-option ${choice === 1 ? 'selected' : ''}">
                     <h4>Option B</h4>
                     <p>$${trialData.optionB.value}</p>
                     <p>${(trialData.optionB.probability * 100).toFixed(0)}% chance</p>
-                    <p>${trialData.optionB.delay} months delay</p>
+                    <p>${formatDelay(trialData.optionB.delay)}</p>
                 </div>
             </div>
 
@@ -297,7 +308,7 @@ async function executeRealLottery(choice, trialData) {
                         <div class="bonus-calculation">
                             <p>Winning amount: $${selectedOption.value}</p>
                             <p>Bonus (1%): $${outcome.bonus.toFixed(2)}</p>
-                            <p>Payment due: In ${outcome.delay} months</p>
+                            <p>Payment due: In ${formatDelay(outcome.delay)}</p>
                         </div>
                     </div>
                 ` : `
@@ -350,7 +361,7 @@ async function recordResponse(choice, trialData) {
             const lotteryOutcome = realLotteryOutcomes.get(currentTrial);
             
             outcome = lotteryOutcome.won ? 
-                `Won $${lotteryOutcome.bonus.toFixed(2)} bonus, paid in ${lotteryOutcome.delay} months` : 
+                `Won $${lotteryOutcome.bonus.toFixed(2)} bonus, paid in ${formatDelay(lotteryOutcome.delay)}` : 
                 'Did not win';
         }
 
@@ -413,11 +424,11 @@ function endExperiment() {
                                     <td>Trial ${trial.trial}</td>
                                     <td class="${trial.choice === 0 ? 'selected-option' : ''}">
                                         $${trial.optionA.value}, ${(trial.optionA.probability * 100).toFixed(0)}%<br>
-                                        ${trial.optionA.delay} months
+                                        ${formatDelay(trial.optionA.delay)}
                                     </td>
                                     <td class="${trial.choice === 1 ? 'selected-option' : ''}">
                                         $${trial.optionB.value}, ${(trial.optionB.probability * 100).toFixed(0)}%<br>
-                                        ${trial.optionB.delay} months
+                                        ${formatDelay(trial.optionB.delay)}
                                     </td>
                                     <td>Option ${trial.choice === 0 ? 'A' : 'B'}</td>
                                     <td>${trial.outcome}</td>
@@ -495,16 +506,15 @@ function prepareCSVDownload() {
     }
 
     let csvContent = "data:text/csv;charset=utf-8,";
-    // Update header to include Trial_Number
     csvContent += "Trial_Number,OptionA_Delay,OptionA_Probability,OptionA_Value,OptionB_Delay,OptionB_Probability,OptionB_Value,Choice,ResponseTime(ms)\n";
 
     responses.forEach((response, index) => {
         let row = [
-            index + 1, // Add trial number starting from 1
-            response.optionA.delay,
+            index + 1,
+            formatDelay(response.optionA.delay),
             response.optionA.probability,
             response.optionA.value,
-            response.optionB.delay,
+            formatDelay(response.optionB.delay),
             response.optionB.probability,
             response.optionB.value,
             response.choice,
@@ -623,9 +633,9 @@ function handleInstructions() {
         <div class="instruction-section">
             <h4>Basic Lottery Structure</h4>
             <ul>
-                <li><strong>Rewards:</strong> The amount you can win ($100 to $900)</li>
-                <li><strong>Probabilities:</strong> Your chance of winning (5% to 95%)</li>
-                <li><strong>Time delays:</strong> When you receive the reward (2 to 10 months)</li>
+                <li><strong>Rewards:</strong> The amount you can win </li>
+                <li><strong>Probabilities:</strong> Your chance of winning </li>
+                <li><strong>Time delays:</strong> When you will receive the reward if you win</li>
             </ul>
         </div>
         

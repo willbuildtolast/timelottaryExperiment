@@ -99,22 +99,9 @@ h1 {
     gap: 5px;
     width: 100%;
     text-align: center;
-}
-
-.reward-amount {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-.probability {
     font-size: 1.2em;
-    color: #4CAF50;
-}
-
-.delay-time {
-    font-size: 1em;
-    color: #666;
+    color: #333333;
+    font-weight: normal;
 }
 
 .option-button:hover {
