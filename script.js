@@ -10,7 +10,7 @@ let currentInstructionStep = 1;
 const totalSteps = 4;
 
 // Arrays of possible delays (in weeks), probabilities (in percentages), and values (in dollars)
-const delays = [1/30, 1/4, 1, 5, 12]; // 1 day, 1 week, 1 month, 5 months, 1 year
+const delays = [3/30, 1/4, 1, 5, 12]; // 3 days, 1 week, 1 month, 5 months, 1 year
 const probabilities = [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95];
 const values = [100, 300, 500, 700, 900]; // dollars
 
@@ -187,7 +187,7 @@ function generateTrial() {
 
 function formatDelay(delay) {
     switch (delay) {
-        case 1/30: return "1 day";
+        case 3/30: return "3 days";
         case 1/4: return "1 week";
         case 1: return "1 month";
         case 5: return "5 months";
