@@ -96,8 +96,9 @@ h1 {
 .lottery-details {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 5px;
     width: 100%;
+    text-align: center;
 }
 
 .reward-amount {

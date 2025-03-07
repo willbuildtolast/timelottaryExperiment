@@ -35,7 +35,12 @@ let realLotteryOutcomes = new Map();
 // Function to generate a practice trial with obvious comparisons
 function generatePracticeTrial(trialNumber) {
     let normalOption = {
-        text: `Option {optionLabel}:<br>$500, 50% chance in 4 months`,
+        text: `Option {optionLabel}:<br>
+               <div class="lottery-details">
+                   <div class="reward-amount">$500</div>
+                   <div class="probability">50% chance</div>
+                   <div class="delay-time">in 4 months</div>
+               </div>`,
         delay: 4,
         probability: 0.5,
         value: 500,
@@ -46,7 +51,12 @@ function generatePracticeTrial(trialNumber) {
     switch(trialNumber) {
         case 1:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$0, 5% chance in 10 months`,
+                text: `Option {optionLabel}:<br>
+                       <div class="lottery-details">
+                           <div class="reward-amount">$0</div>
+                           <div class="probability">5% chance</div>
+                           <div class="delay-time">in 10 months</div>
+                       </div>`,
                 delay: 10,
                 probability: 0.05,
                 value: 0,
@@ -55,7 +65,12 @@ function generatePracticeTrial(trialNumber) {
             break;
         case 2:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$0, 50% chance in 4 months`,
+                text: `Option {optionLabel}:<br>
+                       <div class="lottery-details">
+                           <div class="reward-amount">$0</div>
+                           <div class="probability">50% chance</div>
+                           <div class="delay-time">in 4 months</div>
+                       </div>`,
                 delay: 4,
                 probability: 0.5,
                 value: 0,
@@ -64,7 +79,12 @@ function generatePracticeTrial(trialNumber) {
             break;
         case 3:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$1, 1% chance in 20 months`,
+                text: `Option {optionLabel}:<br>
+                       <div class="lottery-details">
+                           <div class="reward-amount">$1</div>
+                           <div class="probability">1% chance</div>
+                           <div class="delay-time">in 20 months</div>
+                       </div>`,
                 delay: 20,
                 probability: 0.01,
                 value: 1,
@@ -73,7 +93,12 @@ function generatePracticeTrial(trialNumber) {
             break;
         case 4:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$5, 5% chance in 4 months`,
+                text: `Option {optionLabel}:<br>
+                       <div class="lottery-details">
+                           <div class="reward-amount">$5</div>
+                           <div class="probability">5% chance</div>
+                           <div class="delay-time">in 4 months</div>
+                       </div>`,
                 delay: 4,
                 probability: 0.05,
                 value: 5,
@@ -82,7 +107,12 @@ function generatePracticeTrial(trialNumber) {
             break;
         case 5:
             abnormalOption = {
-                text: `Option {optionLabel}:<br>$1, 15% chance in 4 months`,
+                text: `Option {optionLabel}:<br>
+                       <div class="lottery-details">
+                           <div class="reward-amount">$1</div>
+                           <div class="probability">15% chance</div>
+                           <div class="delay-time">in 4 months</div>
+                       </div>`,
                 delay: 4,
                 probability: 0.15,
                 value: 1,
@@ -126,8 +156,18 @@ function generateTrial() {
     let valueB = valuesForB[Math.floor(Math.random() * valuesForB.length)];
 
     // Format probability as percentage for display
-    let optionAText = `Option A:<br>$${valueA}, ${(probA * 100).toFixed(1)}% chance in ${delayA} month(s)`;
-    let optionBText = `Option B:<br>$${valueB}, ${(probB * 100).toFixed(1)}% chance in ${delayB} month(s)`;
+    let optionAText = `Option A:<br>
+                       <div class="lottery-details">
+                           <div class="reward-amount">$${valueA}</div>
+                           <div class="probability">${(probA * 100).toFixed(1)}% chance</div>
+                           <div class="delay-time">in ${delayA} month(s)</div>
+                       </div>`;
+    let optionBText = `Option B:<br>
+                       <div class="lottery-details">
+                           <div class="reward-amount">$${valueB}</div>
+                           <div class="probability">${(probB * 100).toFixed(1)}% chance</div>
+                           <div class="delay-time">in ${delayB} month(s)</div>
+                       </div>`;
 
     return {
         optionA: {
@@ -261,7 +301,7 @@ async function executeRealLottery(choice, trialData) {
                         </div>
                     </div>
                 ` : `
-                    <p>The lottery result was unsuccessful this time.</p>
+                    <p>You did not win this lottery.</p>
                 `}
             </div>
 
